@@ -156,95 +156,113 @@ tigermoth_shoot_pattern
 	inc	tigermoth_shot_counter
 	ldy	#$00
 tigermoth_move_shooting_loop
+	sty	tigermoth_move_shooty
 	lda	tiger_pattern, y
 	beq	tigermoth_move_shooting_next
-	
+
+
 	cmp	#$01
 	bne	tigermoth_move_shooting_c2
 
 	lda	tigermoth_shot_counter	; Pattern 1 - New bullet south every 16 frames
 	and	#$07
 	bne	tigermoth_move_shooting_next
-	lda	#34
+	lda	#00
 	jsr	tigermoth_shoot_bullet
 	jmp	tigermoth_move_shooting_next
 tigermoth_move_shooting_c2
-	
-	
+
+
 	cmp	#$02
 	bne	tigermoth_move_shooting_c3
 
 	lda	tigermoth_shot_counter	; Pattern 2 - New quarter arc south every 64 frames
-	and	#$1F
+	and	#$7F
 	bne	tigermoth_move_shooting_next
-	lda	#28
+	lda	#00
 tigermoth_move_shooting_c2go
 	pha
 	jsr	tigermoth_shoot_bullet
 	pla
 	clc
 	adc	#$01
-	cmp	#42
+	cmp	#20
 	bne	tigermoth_move_shooting_c2go
+
+	lda	#160
+tigermoth_move_shooting_c2go2
+	pha
+	jsr	tigermoth_shoot_bullet
+	pla
+	clc
+	adc	#$01
+	cmp	#180
+	bne	tigermoth_move_shooting_c2go2
+
 	jmp	tigermoth_move_shooting_next
 tigermoth_move_shooting_c3
-	
-	cmp	#$03
-	bne	tigermoth_move_shooting_c4
 
-	lda	tigermoth_shot_counter	; Pattern 3 - Wave backwards and forwards
-	and	#$03
-	bne	tigermoth_move_shooting_next
+;	cmp	#$03
+;	bne	tigermoth_move_shooting_c4
+;
+;	lda	tigermoth_shot_counter	; Pattern 3 - Wave backwards and forwards
+;	and	#$0F
+;	bne	tigermoth_move_shooting_next
+;
+;	ldx	tigermoth_shot_wavepos
+;	inx
+;	cpx	#08
+;	bne	tigermoth_move_c4_clear
+;	ldx #$00
+;	sta	tigermoth_shot_wavepos
+;tigermoth_move_c4_clear
+;	lda	tigermoth_shot_wave, x
+;	jsr	tigermoth_shoot_bullet
 
-	ldx	tigermoth_shot_wavepos
-	inx
-	cpx	#08
-	bne	tigermoth_move_c4_clear
-	ldx #$00
-	sta	tigermoth_shot_wavepos
-tigermoth_move_c4_clear
-	lda	tigermoth_shot_wave, x
-	jsr	tigermoth_shoot_bullet
-
-	jmp	tigermoth_move_shooting_next
-tigermoth_move_shooting_c4
+;	jmp	tigermoth_move_shooting_next
+;tigermoth_move_shooting_c4
 	
 tigermoth_move_shooting_next
+	ldy	tigermoth_move_shooty
 	iny
 	cpy	#$0C
 	bne	tigermoth_move_shooting_loop
 
 	rts
 
+tigermoth_move_shooty	.byte	$00
+
 ;------------------------------------------------------------------[ Shoot bullets
 ;------------------------------------------------------------------[ In  : .Y = Piece Index, .A = Direction
 ;------------------------------------------------------------------[ Out : N/A
 tigermoth_shoot_bullet
-	jsr	bullets_findcpuempty
-	cpx	#$00
-	beq	tigermoth_shoot_bullet_fin
-	sta	bullet_direction, x
-	
-	stx	tigermoth_cfg_temp	; tigermoth_cfg_temp = Bullet Index
+	sta	tigermoth_newbulletd
 
 	lda	tiger_block_rows, y
 	tax	; .X = Row index
 	lda	tiger_curpos_x, x	; .A = X of TigerMoth row
 	clc
 	adc	tiger_block_columns, y	; .A  = X of TigerMoth piece
-	ldx	tigermoth_cfg_temp
-	sta	bullet_x, x
-	
+	sta	tigermoth_newbulletx
+
 	lda	tiger_block_rows, y
 	tax	; .X = Row index
 	lda	tiger_curpos_y, x	; .A = Y of TigerMoth row
 	sec
 	sbc	#28
-	ldx	tigermoth_cfg_temp
-	sta	bullet_y, x
+	;sta	tigermoth_newbullety
+	tay
 	
-tigermoth_shoot_bullet_fin
+	ldx	tigermoth_newbulletx
+	lda	tigermoth_newbulletd
+	jsr	bullets_fire_normal
+
+;tigermoth_shoot_bullet_fin
 	rts
+
+tigermoth_newbulletd	.byte	$00
+tigermoth_newbulletx	.byte	$00
+;tigermoth_newbullety	.byte	$00
 
 ;------------------------------------------------------------------[ Check TigerMoth Health
 ;------------------------------------------------------------------[ In  : N/A

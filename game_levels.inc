@@ -210,10 +210,10 @@ tiger_block_rows
 	.byte	$03, $03, $03
 
 tiger_block_columns
-	.byte	$E0, $F8, $10
-	.byte	$E0, $F8, $10
-	.byte	$E0, $F8, $10
-	.byte	$E0, $F8, $10
+	.byte	$DC, $F4, $0C
+	.byte	$DC, $F4, $0C
+	.byte	$DC, $F4, $0C
+	.byte	$DC, $F4, $0C
 ;	.byte	$E8, $00, $18
 ;	.byte	$E8, $00, $18
 ;	.byte	$E8, $00, $18
@@ -221,5 +221,5 @@ tiger_block_columns
 
 ;------------------------------------------------------------------[ TigerMoth pathing per level
 tiger_level0_path_x		.byte	$98, $80, $60, $73, $A0, $B4, $D8, $C0
-tiger_level0_path_y		.byte	$40, $66, $2E, $34, $80, $3C, $62, $40
+tiger_level0_path_y		.byte	$40, $56, $2E, $34, $50, $3C, $48, $40
 

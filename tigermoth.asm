@@ -38,6 +38,7 @@ menu_loop
 	.INCLUDE	"tools_bitmap.inc"
 	.INCLUDE	"tools_charmap.inc"
 	.INCLUDE	"tools_maths.inc"
+	.INCLUDE	"tools_maths_trig.inc"
 	.INCLUDE	"tools_scoring.inc"
 	.INCLUDE	"tools_timing.inc"
 

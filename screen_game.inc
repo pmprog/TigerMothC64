@@ -10,6 +10,8 @@ game_startnewgame
 	sta	$D025
 	lda	#10
 	sta	$D026	; Set sprite multicolours
+;	lda	#$FF
+;	sta	$D01B	; Sprite Priority
 
 	jsr	score_resetp1
 
@@ -25,6 +27,12 @@ game_newgame_drawline
 	ldx	#255
 	lda	#200
 	jsr	bitmap_plotpixel
+
+	ldy	game_level
+	ldx	#66
+	lda	#200
+	jsr	bitmap_plotpixel
+
 	inc	game_level
 	lda	game_level
 	cmp	#200
@@ -127,16 +135,16 @@ game_playloop
 	beq	game_play_nextlevel
 	
 	jsr	timing_getraster
-	cmp	#$06
+	cmp	#$08
 	bcs	game_raster_notmsprite
 	jsr	tigermoth_configure_sprites
 game_raster_notmsprite
-;	cmp	#$38
-;	bcc	game_raster_nopsprite
-;	cmp	#$42
-;	bcs	game_raster_nopsprite
-;	jsr	player_configure_sprites
-;game_raster_nopsprite
+	cmp	#$40
+	bcc	game_raster_nopsprite
+	cmp	#$48
+	bcs	game_raster_nopsprite
+	;jsr	player_configure_sprites
+game_raster_nopsprite
 ;	cmp	#$50
 ;	bcc	game_process_frame
 ;	cmp	#$60
@@ -144,11 +152,11 @@ game_raster_notmsprite
 ;	cmp	#$68
 ;	bcc	game_loop_configscoreb
 
-	cmp	#145
-	bcs	game_play_skipframe
+;	cmp	#145
+;	bcs	game_play_skipframe
 game_play_doframe
 	jsr	game_process_frame
-game_play_skipframe
+;game_play_skipframe
 	lda	player_health
 	;cmp	#$00
 	bne	game_playloop
@@ -156,10 +164,11 @@ game_play_gameover
 	rts
 
 game_process_frame
-	ldy	#$08
+	ldy	#$02
 	jsr	bullets_check
 	
 	lda	bullet_current
+	and	#$7F
 	bne	game_process_finish
 
 	jsr	tigermoth_check_health
@@ -172,7 +181,7 @@ game_process_finish
 
 	.INCLUDE "game_config_player.inc"
 	.INCLUDE "game_config_tiger.inc"
-	.INCLUDE "game_bullets.inc"
+	.INCLUDE "game_bullets2.inc"
 
 game_level		.byte	$00
 player_health	.byte	$00
